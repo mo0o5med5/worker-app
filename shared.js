@@ -1,5 +1,3 @@
-// shared.js - تخزين الطلبات بين صفحات العميل/العامل (بدون سيرفر)
-
 const LS_REQUESTS = "requests_v1";
 
 function getRequests(){
@@ -18,10 +16,5 @@ function addRequest(req){
 
 function updateRequest(id, patch){
   const list = getRequests().map(r => r.id === id ? { ...r, ...patch } : r);
-  saveRequests(list);
-}
-
-function removeRequest(id){
-  const list = getRequests().filter(r => r.id !== id);
   saveRequests(list);
 }
