@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <title>خدمات العمالة</title>
@@ -10,7 +10,7 @@
 
   <div class="overlay"></div>
 
-  <div class="card">
+  <main class="card">
     <h1>🚚 خدمات العمالة</h1>
 
     <select id="service">
@@ -23,13 +23,19 @@
     <div class="location-box">
       <span class="pin">📍</span>
       <input id="location" type="text" placeholder="موقعك الحالي" />
-      <button class="gps" onclick="getLocation()">📡</button>
+      <button id="gpsBtn" class="gps" type="button" onclick="getLocation()">📡</button>
     </div>
 
     <button class="order-btn" onclick="orderWorker()">طلب عامل</button>
 
     <p id="status"></p>
-  </div>
+
+    <button id="whatsappBtn" class="wa-btn" style="display:none;" onclick="openWhatsApp()">
+      تواصل ومتابعة مع العامل
+    </button>
+
+    <a class="worker-link" href="worker.html">👷‍♂️ أنا عامل</a>
+  </main>
 
   <script src="script.js"></script>
 </body>
