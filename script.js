@@ -66,37 +66,33 @@ function orderWorker(){
   const location = document.getElementById("location").value.trim();
 
   if(!location){
-    setStatus("⚠️ حدد موقعك أولاً (اضغط 📡 أو اسمح بالموقع)");
+    setStatus("⚠️ حدد موقعك أولاً (اضغط 📍 أو اسمح بالموقع)");
     return;
   }
 
   lastService = service;
   lastLocationText = location;
 
-  // طلب جديد ينحفظ في LocalStorage
   const req = {
     id: Date.now(),
     service,
     location,
     status: "NEW",
-    createdAt: new Date().toISOString(),
-    eta: 9
+    eta: 9,
+    createdAt: new Date().toISOString()
   };
 
   addRequest(req);
   lastReqId = req.id;
 
   setStatus("✅ تم إرسال الطلب للعامل 👷‍♂️\n⏱️ وقت الوصول المتوقع: 9 دقائق");
-  document.getElementById("whatsappBtn").style.display = "none"; // ما يظهر لين العامل يقبل
+  document.getElementById("whatsappBtn").style.display = "none";
 
-  // نراقب حالة الطلب كل ثانية
-  startWatchingStatus();
+  watchStatus();
 }
 
-function startWatchingStatus(){
+function watchStatus(){
   const timer = setInterval(() => {
-    if(!lastReqId) return;
-
     const req = getRequests().find(r => r.id === lastReqId);
     if(!req) return;
 
@@ -114,7 +110,7 @@ function startWatchingStatus(){
 }
 
 function openWhatsApp(){
-  const phone = "971500000000"; // عدّل رقمك
+  const phone = "971500000000"; // حط رقم العامل/الشركة
   const msg = `مرحبا، هذا طلب خدمة\nالخدمة: ${lastService}\nالموقع: ${lastLocationText}`;
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
 }
