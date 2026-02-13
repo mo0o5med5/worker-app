@@ -1,118 +1,42 @@
-*{box-sizing:border-box;font-family:"Tajawal", Arial, sans-serif;}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>خدمات العمالة</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
-body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  <div class="overlay"></div>
 
-  /* خلفية صورة (ارفع صورة وسميها bg.jpg) */
-  background: url("bg.jpg") no-repeat center center / cover;
-  position:relative;
-}
+  <div class="card">
+    <h1>🚚 خدمات العمالة</h1>
 
-/* تغميق فخم فوق الصورة */
-.overlay{
-  position:fixed;
-  inset:0;
-  background: linear-gradient(120deg, rgba(0,0,0,.75), rgba(10,30,80,.65));
-  z-index:0;
-}
+    <select id="service">
+      <option>تحميل أثاث</option>
+      <option>فك وتركيب</option>
+      <option>نقل خفيف</option>
+      <option>مساعدة عامة</option>
+    </select>
 
-.card{
-  position:relative;
-  z-index:1;
-  width:340px;
-  padding:26px;
-  text-align:center;
-  color:#fff;
-  background: rgba(20,30,50,.92);
-  border:1px solid rgba(255,255,255,.10);
-  border-radius:18px;
-  box-shadow: 0 25px 60px rgba(0,0,0,.55);
-  backdrop-filter: blur(8px);
-}
+    <div class="location-box">
+      <button id="gpsBtn" class="gps-btn" onclick="getLocation(false)" title="GPS">📍</button>
+      <input id="location" type="text" placeholder="موقعك الحالي" />
+    </div>
 
-h1{
-  margin:0 0 18px 0;
-  font-size:20px;
-}
+    <button class="order-btn" onclick="orderWorker()">طلب عامل</button>
 
-select,input{
-  width:100%;
-  padding:12px;
-  border:none;
-  outline:none;
-  border-radius:12px;
-  margin-bottom:12px;
-  font-size:14px;
-}
+    <p id="status" class="status"></p>
 
-.location-box{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
+    <button id="whatsappBtn" class="wa-btn" style="display:none;" onclick="openWhatsApp()">
+      تواصل واتساب مع العامل
+    </button>
 
-.pin{
-  background:#2c3b55;
-  padding:10px;
-  border-radius:12px;
-}
+    <a class="link" href="worker.html">أنا عامل 👷‍♂️</a>
+  </div>
 
-.gps{
-  background:#2c3b55;
-  border:none;
-  color:white;
-  padding:10px 12px;
-  border-radius:12px;
-  cursor:pointer;
-}
-
-.gps:disabled{opacity:.6; cursor:not-allowed;}
-
-.order-btn{
-  width:100%;
-  border:none;
-  border-radius:14px;
-  padding:14px;
-  cursor:pointer;
-  font-weight:900;
-  background: linear-gradient(135deg,#ffd21f,#ffb703);
-  color:#111827;
-}
-
-#status{
-  margin-top:12px;
-  min-height:26px;
-  font-size:13px;
-  color:#9cffb6;
-  white-space:pre-line;
-}
-
-.wa-btn{
-  margin-top:10px;
-  width:100%;
-  border:none;
-  border-radius:14px;
-  padding:12px;
-  cursor:pointer;
-  font-weight:900;
-  background: linear-gradient(135deg,#22c55e,#16a34a);
-  color:#06110a;
-}
-
-.worker-link{
-  display:block;
-  margin-top:12px;
-  text-decoration:none;
-  background: rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.12);
-  color:#fff;
-  padding:12px;
-  border-radius:14px;
-  font-weight:900;
-}
-
-.worker-link:hover{opacity:.95;}
+  <script src="shared.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
