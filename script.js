@@ -1,8 +1,8 @@
 let lastService = "";
 let lastLocationText = "";
+let lastReqId = null;
 
 window.addEventListener("load", () => {
-  // GPS تلقائي أول ما يفتح
   getLocation(true);
 });
 
@@ -10,7 +10,7 @@ function setStatus(text){
   document.getElementById("status").innerText = text;
 }
 
-function getLocation(isAuto = false){
+function getLocation(isAuto=false){
   const btn = document.getElementById("gpsBtn");
   const locInput = document.getElementById("location");
 
@@ -34,42 +34,27 @@ function getLocation(isAuto = false){
       setStatus("✅ تم تحديد موقعك");
       btn.disabled = false;
     },
-    (err) => {
-      let msg = "❌ ما قدرنا نحدد موقعك";
-      if(err.code === 1) msg = "❌ لازم تسمح بالموقع (Allow Location)";
-      if(err.code === 3) msg = "❌ انتهى وقت تحديد الموقع";
-      setStatus(msg);
+    () => {
+      setStatus("❌ لم يتم السماح بالموقع");
       btn.disabled = false;
     },
-    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+    { enableHighAccuracy:true, timeout:12000, maximumAge:0 }
   );
 }
 
-/* تحويل الإحداثيات لاسم مكان مرتب:
-   مثال: "شارع كذا، القرهود - دبي" */
 async function reverseGeocodePretty(lat, lng){
   try{
     const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
-    const res = await fetch(url, { headers:{ "Accept":"application/json" } });
+    const res = await fetch(url);
     const data = await res.json();
     const a = data.address || {};
 
-    // شارع
-    const road = a.road || a.pedestrian || a.path || a.cycleway || "";
-    const house = a.house_number || "";
-    const street = (house && road) ? `${road} ${house}` : (road || "");
-
-    // منطقة
-    const area = a.suburb || a.neighbourhood || a.quarter || a.city_district || "";
-
-    // مدينة/إمارة
+    const road = a.road || a.pedestrian || a.path || "";
+    const area = a.suburb || a.neighbourhood || a.city_district || "";
     const city = a.city || a.town || a.village || a.state || "";
 
-    // شكل نهائي جميل
-    const part1 = [street, area].filter(Boolean).join("، ");
-    const part2 = [city].filter(Boolean).join("");
-
-    const finalText = [part1, part2].filter(Boolean).join(" - ");
+    const part1 = [road, area].filter(Boolean).join("، ");
+    const finalText = [part1, city].filter(Boolean).join(" - ");
     return finalText || data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
   }catch(e){
     return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
@@ -88,14 +73,48 @@ function orderWorker(){
   lastService = service;
   lastLocationText = location;
 
-  setStatus("✅ تم العثور على عامل قريب 🚶‍♂️\n⏱️ وقت الوصول: 9 دقائق");
-  document.getElementById("whatsappBtn").style.display = "block";
+  // طلب جديد ينحفظ في LocalStorage
+  const req = {
+    id: Date.now(),
+    service,
+    location,
+    status: "NEW",
+    createdAt: new Date().toISOString(),
+    eta: 9
+  };
+
+  addRequest(req);
+  lastReqId = req.id;
+
+  setStatus("✅ تم إرسال الطلب للعامل 👷‍♂️\n⏱️ وقت الوصول المتوقع: 9 دقائق");
+  document.getElementById("whatsappBtn").style.display = "none"; // ما يظهر لين العامل يقبل
+
+  // نراقب حالة الطلب كل ثانية
+  startWatchingStatus();
+}
+
+function startWatchingStatus(){
+  const timer = setInterval(() => {
+    if(!lastReqId) return;
+
+    const req = getRequests().find(r => r.id === lastReqId);
+    if(!req) return;
+
+    if(req.status === "ACCEPTED"){
+      setStatus("✅ تم قبول طلبك ✅\n🚗 العامل في الطريق");
+      document.getElementById("whatsappBtn").style.display = "block";
+      clearInterval(timer);
+    }
+
+    if(req.status === "REJECTED"){
+      setStatus("❌ تم رفض الطلب");
+      clearInterval(timer);
+    }
+  }, 1000);
 }
 
 function openWhatsApp(){
-  // غيّر الرقم هنا
-  const phone = "971500000000";
-  const msg = `مرحبا، أحتاج عامل خدمة\nالخدمة: ${lastService}\nالموقع: ${lastLocationText}`;
-  const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-  window.open(url, "_blank");
+  const phone = "971500000000"; // عدّل رقمك
+  const msg = `مرحبا، هذا طلب خدمة\nالخدمة: ${lastService}\nالموقع: ${lastLocationText}`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
 }
