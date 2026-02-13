@@ -1,31 +1,37 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>تطبيق خدمات العمالة</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>خدمات العمالة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div class="app">
-  <h1>🚚 خدمات العمالة</h1>
+  <div class="card">
+    <h1>🚚 خدمات العمالة</h1>
 
-  <select>
-    <option>تحميل أثاث</option>
-    <option>فك وتركيب</option>
-    <option>نقل خفيف</option>
-    <option>مساعدة عامة</option>
-  </select>
+    <select id="service">
+      <option>تحميل أثاث</option>
+      <option>فك وتركيب</option>
+      <option>نقل خفيف</option>
+      <option>مساعدة عامة</option>
+    </select>
 
-  <input type="text" placeholder="📍 موقعك الحالي">
+    <div class="location-box">
+      <input id="location" type="text" placeholder="📍 موقعك الحالي" />
+      <button onclick="getLocation()">📍</button>
+    </div>
 
-  <button onclick="orderWorker()">طلب عامل</button>
+    <button class="order-btn" onclick="orderWorker()">طلب عامل</button>
 
-  <p id="status"></p>
-</div>
+    <p id="status"></p>
 
-<script src="script.js"></script>
+    <button id="whatsappBtn" class="wa-btn" style="display:none;" onclick="openWhatsApp()">
+      تواصل ومتابعة مع العامل
+    </button>
+  </div>
+
+  <script src="script.js"></script>
 </body>
-  <!-- force rebuild -->
 </html>
