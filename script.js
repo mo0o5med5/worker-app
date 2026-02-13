@@ -1,21 +1,49 @@
-function orderWorker() {
+let userLocation = "";
+
+function getLocation(){
   const status = document.getElementById("status");
-  const service = document.querySelector("select").value;
-  const location = document.querySelector("input").value || "غير محدد";
 
-  status.innerHTML = "🔍 جاري البحث عن أقرب عامل...";
+  if(!navigator.geolocation){
+    status.innerText = "❌ جهازك لا يدعم GPS";
+    return;
+  }
 
-  setTimeout(() => {
-    const eta = Math.floor(Math.random() * 8) + 5; // 5-12 دقائق
-    const msg = `طلب خدمة: ${service}%0Aالموقع: ${location}%0Aالرجاء تأكيد التوفر والوقت.`;
+  status.innerText = "📡 جاري تحديد موقعك...";
 
-    status.innerHTML = `
-      ✅ تم العثور على عامل قريب<br>
-      ⏱️ وقت الوصول المتوقع: <b>${eta} دقائق</b><br><br>
-      <a class="wa" target="_blank"
-         href="https://wa.me/971500000000?text=${msg}">
-         تواصل واتساب مع العامل
-      </a>
-    `;
-  }, 1500);
+  navigator.geolocation.getCurrentPosition(
+    (pos)=>{
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      userLocation = `${lat}, ${lng}`;
+      document.getElementById("location").value = userLocation;
+      status.innerText = "✅ تم تحديد موقعك";
+    },
+    ()=>{
+      status.innerText = "❌ لم يتم السماح بتحديد الموقع";
+    }
+  );
+}
+
+function orderWorker(){
+  const service = document.getElementById("service").value;
+  const location = document.getElementById("location").value;
+  const status = document.getElementById("status");
+
+  if(location === ""){
+    status.innerText = "⚠️ يرجى تحديد الموقع أولاً";
+    return;
+  }
+
+  status.innerText = "✅ تم العثور على عامل قريب 🚶‍♂️\n⏱️ وقت الوصول: 9 دقائق";
+  document.getElementById("whatsappBtn").style.display = "block";
+}
+
+function openWhatsApp(){
+  const service = document.getElementById("service").value;
+  const location = document.getElementById("location").value;
+
+  const msg = `مرحبا، أحتاج عامل خدمة\nالخدمة: ${service}\nالموقع: ${location}`;
+  const url = `https://wa.me/971500000000?text=${encodeURIComponent(msg)}`;
+
+  window.open(url,"_blank");
 }
