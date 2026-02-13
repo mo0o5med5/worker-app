@@ -1,47 +1,52 @@
 * {
   box-sizing: border-box;
-  font-family: "Arial", sans-serif;
+  font-family: "Tajawal", Arial, sans-serif;
 }
 
 body {
   margin: 0;
   height: 100vh;
-  background-image: url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c");
-  background-size: cover;
-  background-position: center;
+  background: url("bg.jpg") no-repeat center center / cover;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
-/* طبقة تغميق */
-.overlay {
+/* تغميق + لون أزرق مثل اللي في الصورة */
+body::before {
+  content: "";
   position: fixed;
   inset: 0;
   background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.75),
-    rgba(0, 40, 120, 0.6)
+    120deg,
+    rgba(3, 10, 30, 0.85),
+    rgba(10, 30, 80, 0.75)
   );
   z-index: 0;
 }
 
+/* الكارد */
 .card {
   position: relative;
   z-index: 1;
-  background: rgba(25, 35, 55, 0.95);
-  padding: 25px;
+  width: 330px;
+  padding: 24px;
+  background: rgba(20, 30, 50, 0.95);
   border-radius: 18px;
-  width: 320px;
-  text-align: center;
   color: white;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  text-align: center;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
 }
 
+/* العنوان */
 .card h1 {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+  font-size: 20px;
 }
 
+/* الحقول */
 select,
 input {
   width: 100%;
@@ -52,20 +57,16 @@ input {
   font-size: 14px;
 }
 
+/* الموقع */
 .location-box {
   display: flex;
   gap: 8px;
   align-items: center;
 }
 
-.location-box .pin {
-  background: #2b3a55;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.gps {
-  background: #2b3a55;
+.location-box .pin,
+.location-box button {
+  background: #2c3b55;
   border: none;
   color: white;
   padding: 10px;
@@ -73,18 +74,21 @@ input {
   cursor: pointer;
 }
 
+/* زر الطلب */
 .order-btn {
   width: 100%;
-  background: #ffd21f;
-  color: black;
+  background: linear-gradient(135deg, #ffd21f, #ffb703);
+  color: #000;
   border: none;
   padding: 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 16px;
   cursor: pointer;
   margin-top: 10px;
+  font-weight: bold;
 }
 
+/* الحالة */
 #status {
   margin-top: 12px;
   font-size: 13px;
