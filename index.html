@@ -1,42 +1,120 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <title>خدمات العمالة</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
+let lastService = "";
+let lastLocationText = "";
+let lastReqId = null;
 
-  <div class="overlay"></div>
+window.addEventListener("load", () => {
+  getLocation(true);
+});
 
-  <main class="card">
-    <h1>🚚 خدمات العمالة</h1>
+function setStatus(text){
+  document.getElementById("status").innerText = text;
+}
 
-    <select id="service">
-      <option>تحميل أثاث</option>
-      <option>فك وتركيب</option>
-      <option>نقل خفيف</option>
-      <option>مساعدة عامة</option>
-    </select>
+function getLocation(isAuto=false){
+  const btn = document.getElementById("gpsBtn");
+  const locInput = document.getElementById("location");
 
-    <div class="location-box">
-      <span class="pin">📍</span>
-      <input id="location" type="text" placeholder="موقعك الحالي" />
-      <button id="gpsBtn" class="gps" type="button" onclick="getLocation()">📡</button>
-    </div>
+  if(!navigator.geolocation){
+    setStatus("❌ جهازك لا يدعم GPS");
+    return;
+  }
 
-    <button class="order-btn" onclick="orderWorker()">طلب عامل</button>
+  setStatus(isAuto ? "📡 جاري تحديد موقعك تلقائيًا..." : "📡 جاري تحديد موقعك...");
+  btn.disabled = true;
 
-    <p id="status"></p>
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
 
-    <button id="whatsappBtn" class="wa-btn" style="display:none;" onclick="openWhatsApp()">
-      تواصل ومتابعة مع العامل
-    </button>
+      const pretty = await reverseGeocodePretty(lat, lng);
+      locInput.value = pretty;
+      lastLocationText = pretty;
 
-    <a class="worker-link" href="worker.html">👷‍♂️ أنا عامل</a>
-  </main>
+      setStatus("✅ تم تحديد موقعك");
+      btn.disabled = false;
+    },
+    () => {
+      setStatus("❌ لم يتم السماح بالموقع");
+      btn.disabled = false;
+    },
+    { enableHighAccuracy:true, timeout:12000, maximumAge:0 }
+  );
+}
 
-  <script src="script.js"></script>
-</body>
-</html>
+async function reverseGeocodePretty(lat, lng){
+  try{
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const a = data.address || {};
+
+    const road = a.road || a.pedestrian || a.path || "";
+    const area = a.suburb || a.neighbourhood || a.city_district || "";
+    const city = a.city || a.town || a.village || a.state || "";
+
+    const part1 = [road, area].filter(Boolean).join("، ");
+    const finalText = [part1, city].filter(Boolean).join(" - ");
+    return finalText || data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  }catch(e){
+    return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  }
+}
+
+function orderWorker(){
+  const service = document.getElementById("service").value;
+  const location = document.getElementById("location").value.trim();
+
+  if(!location){
+    setStatus("⚠️ حدد موقعك أولاً (اضغط 📡 أو اسمح بالموقع)");
+    return;
+  }
+
+  lastService = service;
+  lastLocationText = location;
+
+  // طلب جديد ينحفظ في LocalStorage
+  const req = {
+    id: Date.now(),
+    service,
+    location,
+    status: "NEW",
+    createdAt: new Date().toISOString(),
+    eta: 9
+  };
+
+  addRequest(req);
+  lastReqId = req.id;
+
+  setStatus("✅ تم إرسال الطلب للعامل 👷‍♂️\n⏱️ وقت الوصول المتوقع: 9 دقائق");
+  document.getElementById("whatsappBtn").style.display = "none"; // ما يظهر لين العامل يقبل
+
+  // نراقب حالة الطلب كل ثانية
+  startWatchingStatus();
+}
+
+function startWatchingStatus(){
+  const timer = setInterval(() => {
+    if(!lastReqId) return;
+
+    const req = getRequests().find(r => r.id === lastReqId);
+    if(!req) return;
+
+    if(req.status === "ACCEPTED"){
+      setStatus("✅ تم قبول طلبك ✅\n🚗 العامل في الطريق");
+      document.getElementById("whatsappBtn").style.display = "block";
+      clearInterval(timer);
+    }
+
+    if(req.status === "REJECTED"){
+      setStatus("❌ تم رفض الطلب");
+      clearInterval(timer);
+    }
+  }, 1000);
+}
+
+function openWhatsApp(){
+  const phone = "971500000000"; // عدّل رقمك
+  const msg = `مرحبا، هذا طلب خدمة\nالخدمة: ${lastService}\nالموقع: ${lastLocationText}`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+}
