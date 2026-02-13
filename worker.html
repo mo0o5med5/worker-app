@@ -2,76 +2,41 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>أنا عامل - خدمات العمالة</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="worker.css" />
+  <title>خدمات العمالة</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <div class="overlay"></div>
 
-  <header class="topbar">
-    <a class="back" href="index.html">← رجوع</a>
-    <div class="brand">👷‍♂️ لوحة العامل</div>
-  </header>
+  <div class="card">
+    <h1>🚚 خدمات العمالة</h1>
 
-  <main class="wrap">
+    <select id="service">
+      <option>تحميل أثاث</option>
+      <option>فك وتركيب</option>
+      <option>نقل خفيف</option>
+      <option>مساعدة عامة</option>
+    </select>
 
-    <section class="card">
-      <h2>بيانات العامل</h2>
+    <div class="location-box">
+      <button id="gpsBtn" class="gps-btn" onclick="getLocation(false)" title="GPS">📍</button>
+      <input id="location" type="text" placeholder="موقعك الحالي" />
+    </div>
 
-      <div class="grid">
-        <div class="field">
-          <label>اسم العامل</label>
-          <input id="wName" type="text" placeholder="مثال: محمد" />
-        </div>
+    <button class="order-btn" onclick="orderWorker()">طلب عامل</button>
 
-        <div class="field">
-          <label>رقم الهاتف (واتساب)</label>
-          <input id="wPhone" type="text" placeholder="9715xxxxxxxx" />
-        </div>
+    <p id="status" class="status"></p>
 
-        <div class="field">
-          <label>الخدمة</label>
-          <select id="wService">
-            <option>تحميل أثاث</option>
-            <option>فك وتركيب</option>
-            <option>نقل خفيف</option>
-            <option>مساعدة عامة</option>
-          </select>
-        </div>
+    <button id="whatsappBtn" class="wa-btn" style="display:none;" onclick="openWhatsApp()">
+      تواصل واتساب مع العامل
+    </button>
 
-        <div class="field">
-          <label>المنطقة</label>
-          <input id="wArea" type="text" placeholder="مثال: دبي - القرهود" />
-        </div>
-      </div>
+    <a class="link" href="worker.html">أنا عامل 👷‍♂️</a>
+  </div>
 
-      <div class="row">
-        <button class="btn primary" onclick="saveWorker()">💾 حفظ</button>
-        <button class="btn ghost" onclick="getWorkerLocation()">📍 جلب موقعي</button>
-
-        <label class="switch">
-          <input id="wOnline" type="checkbox" onchange="toggleOnline()" />
-          <span class="slider"></span>
-          <span class="txt">متاح الآن</span>
-        </label>
-      </div>
-
-      <p id="wStatus" class="status"></p>
-    </section>
-
-    <section class="card">
-      <div class="head">
-        <h2>طلبات قريبة</h2>
-        <button class="btn small" onclick="mockNewRequest()">➕ طلب تجريبي</button>
-      </div>
-
-      <div id="requests" class="requests"></div>
-    </section>
-
-  </main>
-
-  <script src="worker.js"></script>
+  <script src="shared.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
